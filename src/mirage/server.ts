@@ -14,7 +14,7 @@ const makeServer = ({ environment = 'test' } = {}) => {
     },
 
     routes() {
-      this.passthrough(`${constant.RANDOM_PICS}**`);
+      this.passthrough(constant.RANDOM_PICS);
 
       this.namespace = constant.NAMESPACE;
 
@@ -82,8 +82,7 @@ const makeServer = ({ environment = 'test' } = {}) => {
       this.get('/books/:id', (schema, request) => {
         const id = request.params.id;
         const book = schema.find('books', id);
-        if (!book)
-          return {};
+        if (!book) return {};
         return book.attrs;
       });
 
