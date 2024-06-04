@@ -159,7 +159,7 @@ const EditBook: React.FC = () => {
             />
           </div>
           <div>
-            <Button type="submit" variant="outlined">
+            <Button type="submit" disabled={loading} variant="outlined">
               Update
             </Button>
           </div>

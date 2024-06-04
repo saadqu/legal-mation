@@ -10,7 +10,11 @@ import {
   Grid,
   Typography,
 } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+} from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from 'react-query';
@@ -67,7 +71,23 @@ const Authors: React.FC = () => {
     }
   };
 
+  const ImageRenderer = (props: GridRenderCellParams<Author>) => {
+    return (
+      <img
+        src={props.value.large}
+        alt="Image"
+        style={{ width: 50, height: 50, objectFit: 'cover' }}
+      />
+    );
+  };
+
   const columns: GridColDef<Author>[] = [
+    {
+      field: 'picture',
+      headerName: 'Image',
+      width: 150,
+      renderCell: (params: GridRenderCellParams<Author>) => ImageRenderer(params),
+    },
     { field: 'id', headerName: 'ID', width: 90 },
     { field: 'name', headerName: 'Name', width: 200 },
     {

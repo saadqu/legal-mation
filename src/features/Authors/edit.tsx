@@ -75,7 +75,7 @@ const EditAuthor: React.FC = () => {
             error="Name is required"
           />
           <div>
-            <Button type="submit" variant="outlined">
+            <Button type="submit" disabled={loading} variant="outlined">
               Update
             </Button>
           </div>

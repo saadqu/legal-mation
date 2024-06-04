@@ -20,7 +20,6 @@ const fetchPics = (): Promise<AuthorPics> => {
         resolve(picture);
       }
     } catch (error) {
-      console.log('🚀 ~ returnnewPromise<AuthorPics> ~ error:', error);
       resolve({ large: '', medium: '', thumbnail: '' });
     }
   });
@@ -67,7 +66,7 @@ const AddAuthor: React.FC = () => {
             error="Name is required"
           />
           <div>
-            <Button type="submit" variant="outlined">
+            <Button type="submit" disabled={loading} variant="outlined">
               Add
             </Button>
           </div>
