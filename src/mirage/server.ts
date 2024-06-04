@@ -20,21 +20,7 @@ const makeServer = ({ environment = 'test' } = {}) => {
 
       this.post('/authors', async (schema, request) => {
         const attrs = JSON.parse(request.requestBody);
-        let picture = null;
-        try {
-          const response = await fetch(constant.RANDOM_PICS);
-          const data = await response.json();
-          if (response.ok) {
-            const {
-              results: [pictureData],
-            } = data;
-            ({ picture } = pictureData);
-          }
-        } catch (error) {
-          picture = { large: '', medium: '', thumbnail: '' };
-        }
-        const payload = { ...attrs, picture };
-        schema.create('authors', payload);
+        schema.create('authors', attrs);
 
         return attrs;
       });
