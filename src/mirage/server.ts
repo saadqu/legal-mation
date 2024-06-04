@@ -54,7 +54,6 @@ const makeServer = ({ environment = 'test' } = {}) => {
 
       this.post('/books', async (schema, request) => {
         const attrs = JSON.parse(request.requestBody);
-        console.log('🚀 ~ this.post ~ attrs:', attrs);
         const { authors } = attrs;
         const author = schema.find('authors', authors);
         const payload = { ...attrs, authors: [author] };

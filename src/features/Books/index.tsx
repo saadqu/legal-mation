@@ -35,25 +35,21 @@ const BooksComponent: React.FC = () => {
   const { status, error, isError } = useQuery('books', fetchBooks, {
     enabled: fetchEnabled,
     onSuccess: (data: { books: Book[] }) => {
-      console.log('🚀 ~ data:', data);
       dispatch(setBooks(data.books));
       setFetchEnabled(false);
     },
   });
 
   const editBook = (id: string | number) => {
-    console.log('🚀 ~ id:', id);
     navigate(`/edit-book/${id}`);
   };
 
   const deleteBookRow = (id: string | number) => {
-    console.log('🚀 ~ deleteAuthor ~ id:', id);
     setSelectedId(id);
     setOpenDeleteDialog(true);
   };
 
   const deleteBookFromDialog = async () => {
-    console.log('🚀 ~ deleteAuthorFromDialog ~ id:', selectedId);
     try {
       await removeBook(selectedId);
     } catch (error) {

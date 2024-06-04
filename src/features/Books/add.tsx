@@ -50,7 +50,6 @@ const AddBook: React.FC = () => {
   } = useQuery('authors', fetchAuthors, {
     enabled: fetchEnabled,
     onSuccess: (data: { authors: Author[] }) => {
-      console.log('🚀 ~ data:', data);
       dispatch(setAuthors(data.authors));
       setFetchEnabled(false);
     },
