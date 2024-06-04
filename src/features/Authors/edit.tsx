@@ -56,7 +56,12 @@ const EditAuthor: React.FC = () => {
   return (
     <>
       <Grid item xs={8}>
-        <Typography variant="h4">Edit Author id: {id}</Typography>
+        <img
+          src={author.picture?.large}
+          alt="Image"
+          style={{ width: 150, height: 150 }}
+        />
+        <Typography variant="h5">Edit Author id: {id}</Typography>
         {isLoading && <Alert severity="info">Loading...</Alert>}
         {loading && <Alert severity="info">Updating...</Alert>}
         {isError && (
