@@ -15,7 +15,6 @@ const makeServer = ({ environment = 'test' } = {}) => {
 
     routes() {
       this.passthrough(`${constant.RANDOM_PICS}**`);
-      this.passthrough(constant.RANDOM_PICS);
 
       this.namespace = constant.NAMESPACE;
 
