@@ -93,6 +93,18 @@ const makeServer = ({ environment = 'test' } = {}) => {
       });
     },
   });
+  server.pretender.handledRequest = function (verb) {
+    if (verb.toLowerCase() !== 'get' && verb.toLowerCase() !== 'head') {
+      localStorage.setItem('db', JSON.stringify(server.db.dump()));
+    }
+  };
+
+  const dbData = localStorage.getItem('db');
+
+  if (dbData) {
+    // https://miragejs.com/api/classes/db/#load-data
+    server.db.loadData(JSON.parse(dbData));
+  }
   return server;
 };
 
