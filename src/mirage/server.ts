@@ -14,28 +14,13 @@ const makeServer = ({ environment = 'test' } = {}) => {
     },
 
     routes() {
-      this.passthrough(`${constant.RANDOM_PICS}**`);
       this.passthrough(constant.RANDOM_PICS);
 
       this.namespace = constant.NAMESPACE;
 
       this.post('/authors', async (schema, request) => {
         const attrs = JSON.parse(request.requestBody);
-        let picture = null;
-        try {
-          const response = await fetch(constant.RANDOM_PICS);
-          const data = await response.json();
-          if (response.ok) {
-            const {
-              results: [pictureData],
-            } = data;
-            ({ picture } = pictureData);
-          }
-        } catch (error) {
-          picture = { large: '', medium: '', thumbnail: '' };
-        }
-        const payload = { ...attrs, picture };
-        schema.create('authors', payload);
+        schema.create('authors', attrs);
 
         return attrs;
       });
@@ -69,7 +54,6 @@ const makeServer = ({ environment = 'test' } = {}) => {
 
       this.post('/books', async (schema, request) => {
         const attrs = JSON.parse(request.requestBody);
-        console.log('🚀 ~ this.post ~ attrs:', attrs);
         const { authors } = attrs;
         const author = schema.find('authors', authors);
         const payload = { ...attrs, authors: [author] };
@@ -83,8 +67,7 @@ const makeServer = ({ environment = 'test' } = {}) => {
       this.get('/books/:id', (schema, request) => {
         const id = request.params.id;
         const book = schema.find('books', id);
-        if (!book)
-          return {};
+        if (!book) return {};
         return book.attrs;
       });
 
@@ -110,6 +93,19 @@ const makeServer = ({ environment = 'test' } = {}) => {
       });
     },
   });
+
+  server.pretender.handledRequest = function (verb) {
+    if (verb.toLowerCase() !== 'get' && verb.toLowerCase() !== 'head') {
+      localStorage.setItem('db', JSON.stringify(server.db.dump()));
+    }
+  };
+
+  const dbData = localStorage.getItem('db');
+
+  if (dbData) {
+    // https://miragejs.com/api/classes/db/#load-data
+    server.db.loadData(JSON.parse(dbData));
+  }
   return server;
 };
 

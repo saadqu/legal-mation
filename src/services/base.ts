@@ -26,12 +26,10 @@ export class BaseService<T> {
    * @returns Promise type
    */
   getOne(id: string | number): Promise<T> {
-    console.log("🚀 ~ BaseService<T> ~ getOne ~ id:", id)
     return new Promise<T>(async (resolve, reject) => {
         try {
           const response = await fetch(`${this.baseUrl}/${id}`);
           const data = await response.json();
-          console.log("🚀 ~ BaseService<T> ~ returnnewPromise<T> ~ data:", data)
           resolve(data);
         } catch (error) {
           reject(error);
@@ -69,7 +67,6 @@ export class BaseService<T> {
    * @returns promise type
    */
   update(data: T, id: string | number): Promise<T> {
-    console.log("🚀 ~ BaseService<T> ~ update ~ id:", id)
     return new Promise<T>(async (resolve, reject) => {
       try {
         const response = await fetch(`${this.baseUrl}/${id}`, {
