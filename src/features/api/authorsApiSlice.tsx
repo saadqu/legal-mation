@@ -27,6 +27,12 @@ export const authorsApiSlice = createApi({
         body: author,
       }),
     }),
+    deleteAuthor: builder.mutation<Author, number | string>({
+        query: (id) => ({
+          url: `/authors/${id}`,
+          method: 'DELETE',
+        }),
+      }),
   }),
 });
 
@@ -36,4 +42,5 @@ export const {
   useGetAuthorQuery,
   useAddAuthorMutation,
   useUpdateAuthorMutation,
+  useDeleteAuthorMutation,
 } = authorsApiSlice;

@@ -19,12 +19,16 @@ import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 
 import { RootState } from '../../app/store';
 import { Author } from '../../interface';
-import { deleteAuthor } from '../../services/authors';
-import { useGetAuthorsQuery } from '../api/authorsApiSlice';
+// import { deleteAuthor } from '../../services/authors';
+import {
+  useDeleteAuthorMutation,
+  useGetAuthorsQuery,
+} from '../api/authorsApiSlice';
 
 const Authors: React.FC = () => {
   const navigate = useNavigate();
   const { error, isError, isFetching, refetch } = useGetAuthorsQuery();
+  const [deleteAuthor] = useDeleteAuthorMutation();
   const authors = useSelector((state: RootState) => state.authors.authors);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedId, setSelectedId] = useState<string | number>(0);
@@ -44,7 +48,7 @@ const Authors: React.FC = () => {
 
   const deleteAuthorFromDialog = async (): Promise<void> => {
     try {
-      await deleteAuthor(selectedId);
+      await deleteAuthor(selectedId).unwrap();
     } catch (error: unknown) {
       console.log('🚀 ~ deleteAuthorFromDialog ~ error:', error);
     } finally {
