@@ -75,7 +75,7 @@ const EditBook: React.FC = () => {
   return (
     <>
       <Grid item xs={8}>
-        <Typography variant="h4">Edit Book id: </Typography>
+        <Typography variant="h4">Edit Book id: {id}</Typography>
         {isLoading && <Alert severity="info">Updating Book...</Alert>}
         {isFetching && <Alert severity="info">Fetching Book...</Alert>}
         {isFetchingAuthor && <Alert severity="info">Fetching authors...</Alert>}
