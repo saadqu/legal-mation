@@ -1,4 +1,4 @@
-# 📄 LegalMation Challenge
+# 📄 LM Challenge
 
 This project addresses most of the code challenge requirements using the following technologies:
 - ReactJS using typescript
