@@ -11,7 +11,7 @@ import {
 
 const EditAuthor: React.FC = () => {
   const { id } = useParams();
-  const { data, isError, isFetching } = useGetAuthorQuery(id || 0);
+  const { data, isError, isFetching, refetch } = useGetAuthorQuery(id || 0);
   const [updateAuthor, { isError: isErrorUpdating, isLoading }] =
     useUpdateAuthorMutation();
 
@@ -25,6 +25,10 @@ const EditAuthor: React.FC = () => {
     if (!data) return;
     setValue('name', data.authors.name);
   }, [data, setValue]);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const onSubmit = async (author: Author) => {
     try {
