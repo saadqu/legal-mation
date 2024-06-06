@@ -1,6 +1,6 @@
 # 📄 LegalMation Challenge
 
-This project cover most of the requirement challenge tasks using below tech.
+This project addresses most of the code challenge requirements using the following technologies:
 - ReactJS using typescript
 - Vite.js(https://vitejs.dev) – as bundler
 - Vitest(https://vitest.dev) – as testing framework
@@ -9,7 +9,7 @@ This project cover most of the requirement challenge tasks using below tech.
 - React form hook, for forms and validations
 - MirageJS for local test API's
 
-This project contains MUI for layouts, controls and clean looking environment.
+This project utilizes MUI for layouts, controls, and a clean-looking environment.
 
 ## Installation
 
@@ -19,7 +19,7 @@ Using `yarn` as package manager. Follow below steps to run the project.
 3. Run `yarn dev` to start the project.
 4. Copy `http://localhost:5173/` and open it on browser.
 
-To run the tests run `yarn test` and it will start running the test. I have added some of the tests, but unfortunately not covering all of the tests.
+To run the tests, use `yarn test` to initiate the testing process. I've added some tests, but unfortunately, not all are covered yet.
 
 ## Functionalities
 
@@ -42,4 +42,4 @@ There are validations added so all fields are required.
 
 ## Further Plan
 
-I am planning to add more tests into it along with `RTK Query` I did test firstly using `React Query library` it was working, but after moving to `RTK Query` some of the tests are failing. Will soon chnage the logic to `RTK Query` so that's why there is still some functions left which are based on `React Query library`.
+I am planning to add more tests and integrate `RTK Query` tests. Initially, I tested using the `React Query library`, and everything worked. However, after switching to `RTK Query`, some tests started failing. I will soon update the logic to fully utilize `RTK Query`, which is why some functions still rely on the `React Query library`.
