@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Author } from '../../interface';
+import { authorsApiSlice } from '../api/authorsApiSlice';
 
 interface AuthorState {
   authors: Author[];
@@ -19,6 +20,15 @@ const authorSlice = createSlice({
     addAuthor(state, action: PayloadAction<Author>) {
       state.authors.push(action.payload);
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      authorsApiSlice.endpoints.getAuthors.matchFulfilled,
+      (state, { payload }) => {
+        console.log("🚀 ~ payload:", payload)
+        state.authors = payload.authors;
+      }
+    );
   },
 });
 

@@ -10,46 +10,28 @@ import {
   Grid,
   Typography,
 } from '@mui/material';
-import {
-  DataGrid,
-  GridColDef,
-  GridRenderCellParams,
-} from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from 'react-query';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { GridActionsCellItem } from '@mui/x-data-grid';
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 
-import { RootState, AppDispatch } from '../../app/store';
-import { setAuthors } from './authorSlice';
+import { RootState } from '../../app/store';
 import { Author } from '../../interface';
-import { deleteAuthor, fetchAuthors } from '../../services/authors';
+import { deleteAuthor } from '../../services/authors';
+import { useGetAuthorsQuery } from '../api/authorsApiSlice';
 
 const Authors: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
+  const { error, isError, isFetching, refetch } = useGetAuthorsQuery();
   const authors = useSelector((state: RootState) => state.authors.authors);
-  const [fetchEnabled, setFetchEnabled] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedId, setSelectedId] = useState<string | number>(0);
 
   useEffect(() => {
-    setFetchEnabled(true);
-  }, []);
-
-  const { status, error, isLoading, isError } = useQuery(
-    'authors',
-    fetchAuthors,
-    {
-      enabled: fetchEnabled,
-      onSuccess: (data: { authors: Author[] }) => {
-        dispatch(setAuthors(data.authors));
-        setFetchEnabled(false);
-      },
-    }
-  );
+    refetch();
+  }, [refetch]);
 
   const editAuthor = (id: string | number): void => {
     navigate(`/edit-author/${id}`);
@@ -67,7 +49,7 @@ const Authors: React.FC = () => {
       console.log('🚀 ~ deleteAuthorFromDialog ~ error:', error);
     } finally {
       setOpenDeleteDialog(false);
-      setFetchEnabled(true);
+      refetch();
     }
   };
 
@@ -86,7 +68,8 @@ const Authors: React.FC = () => {
       field: 'picture',
       headerName: 'Image',
       width: 150,
-      renderCell: (params: GridRenderCellParams<Author>) => ImageRenderer(params),
+      renderCell: (params: GridRenderCellParams<Author>) =>
+        ImageRenderer(params),
     },
     { field: 'id', headerName: 'ID', width: 90 },
     { field: 'name', headerName: 'Name', width: 200 },
@@ -127,33 +110,30 @@ const Authors: React.FC = () => {
             Add
           </Button>
         </div>
-        {isLoading && <Alert severity="info">Loading...</Alert>}
-        {status === 'loading' && <div>Loading...</div>}
+        {isFetching && <Alert severity="info">Loading...</Alert>}
         {isError && (
           <Alert severity="info">
             Error: {JSON.stringify(error) || 'Something happened'}
           </Alert>
         )}
-        {status === 'success' && (
-          <Box width={700}>
-            <div style={{ height: 400, width: '100%' }}>
-              <DataGrid
-                rows={authors}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
-                    },
+        <Box width={700}>
+          <div style={{ height: 400, width: '100%' }}>
+            <DataGrid
+              rows={authors}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 5,
                   },
-                }}
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
-            </div>
-          </Box>
-        )}
+                },
+              }}
+              pageSizeOptions={[5]}
+              checkboxSelection
+              disableRowSelectionOnClick
+            />
+          </div>
+        </Box>
       </Grid>
       <Dialog
         open={openDeleteDialog}
