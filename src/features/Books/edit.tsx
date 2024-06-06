@@ -10,26 +10,30 @@ import {
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useQuery } from 'react-query';
+import { useSelector } from 'react-redux';
 import { Author, Book } from '../../interface';
 import ChallengeInput from '../../components/Form/Input';
-import { AppDispatch, RootState } from '../../app/store';
-import { fetchAuthors } from '../../services/authors';
-import { setAuthors } from '../Authors/authorSlice';
-import { getSingle, update } from '../../services/books';
+import { RootState } from '../../app/store';
 import { useParams } from 'react-router-dom';
-
-interface BookEdit extends Book {
-  authorIds: string[];
-}
+import { useGetBookQuery, useUpdateBookMutation } from '../api/booksApiSlice';
+import { useGetAuthorsQuery } from '../api/authorsApiSlice';
 
 const EditBook: React.FC = () => {
   const { id } = useParams();
-  const dispatch = useDispatch<AppDispatch>();
-  const [error, setError] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [fetchEnabled, setFetchEnabled] = useState(false);
+  const {
+    data,
+    isError,
+    isFetching,
+    refetch: bookRefetch,
+  } = useGetBookQuery(id || 0);
+  const {
+    error: authorError,
+    isError: isAuthorError,
+    isFetching: isFetchingAuthor,
+    refetch,
+  } = useGetAuthorsQuery();
+  const [updateBook, { isError: isErrorUpdating, isLoading }] =
+    useUpdateBookMutation();
   const authors = useSelector((state: RootState) => state.authors.authors);
   const [authorList, setAuthorList] = useState<Author[]>([]);
   const defaultValues = {
@@ -42,51 +46,29 @@ const EditBook: React.FC = () => {
   });
 
   useEffect(() => {
+    if (!data) return;
+    setValue('name', data.name);
+    setValue('authors', Number(data.authorIds[0]));
+    setValue('publishDate', data.publishDate);
+  }, [data, setValue]);
+
+  useEffect(() => {
     setAuthorList(authors);
   }, [authors]);
 
   useEffect(() => {
-    setFetchEnabled(true);
-  }, []);
-
-  const {
-    status,
-    error: bookError,
-    isError,
-    isLoading,
-  } = useQuery('singleBook', () => getSingle(id || 0), {
-    enabled: fetchEnabled,
-    onSuccess: (data: BookEdit) => {
-      if (!data) throw new Error('No data found.');
-      setValue('name', data.name);
-      setValue('authors', Number(data.authorIds[0]));
-      setValue('publishDate', data.publishDate);
-      setFetchEnabled(false);
-    },
-  });
-
-  const {
-    error: authorError,
-    isError: isAuthorError,
-    isLoading: isFetchingAuthor
-  } = useQuery('authors', fetchAuthors, {
-    enabled: fetchEnabled,
-    onSuccess: (data: { authors: Author[] }) => {
-      dispatch(setAuthors(data.authors));
-      setFetchEnabled(false);
-    },
-  });
+    refetch();
+    bookRefetch();
+  }, [refetch, bookRefetch]);
 
   const onSubmit = async (data: Book) => {
+    console.log('🚀 ~ onSubmit ~ data:', data);
     try {
-      setLoading(true);
       if (!id) throw new Error('Id is missing');
-      await update(data, id);
+      await updateBook({ book: data, id }).unwrap();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    } catch (err: unknown) {
+      console.log('🚀 ~ onSubmit ~ err:', err);
     }
   };
 
@@ -94,26 +76,19 @@ const EditBook: React.FC = () => {
     <>
       <Grid item xs={8}>
         <Typography variant="h4">Edit Book id: </Typography>
-        {loading && <Alert severity="info">Updating Book...</Alert>}
-        {isLoading && <Alert severity="info">Fetching Book...</Alert>}
-        {isFetchingAuthor && (
-          <Alert severity="info">Fetching authors...</Alert>
-        )}
+        {isLoading && <Alert severity="info">Updating Book...</Alert>}
+        {isFetching && <Alert severity="info">Fetching Book...</Alert>}
+        {isFetchingAuthor && <Alert severity="info">Fetching authors...</Alert>}
         {isAuthorError && (
           <Alert severity="error">
             Error: {JSON.stringify(authorError) || 'Something happened'}
           </Alert>
         )}
-        {error === 'error' && (
-          <Alert severity="error">Error: {error || 'Something happened'}</Alert>
-        )}
-        {status === 'loading' && (
-          <Alert severity="info">Fetching book...</Alert>
+        {isErrorUpdating && (
+          <Alert severity="error">Error: Failed to update.</Alert>
         )}
         {isError && (
-          <Alert severity="error">
-            Error: {JSON.stringify(bookError) || 'Something happened'}
-          </Alert>
+          <Alert severity="error">Error: Failed to fetch book.</Alert>
         )}
         <form style={{ marginTop: '2em' }} onSubmit={handleSubmit(onSubmit)}>
           <ChallengeInput<Book>
@@ -159,7 +134,7 @@ const EditBook: React.FC = () => {
             />
           </div>
           <div>
-            <Button type="submit" disabled={loading} variant="outlined">
+            <Button type="submit" disabled={isLoading} variant="outlined">
               Update
             </Button>
           </div>

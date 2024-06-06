@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Book } from '../../interface';
+import { booksApiSlice } from '../api/booksApiSlice';
 
 interface BookState {
   books: Book[];
@@ -19,6 +20,14 @@ const bookSlice = createSlice({
     addBooks(state, action: PayloadAction<Book>) {
       state.books.push(action.payload);
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      booksApiSlice.endpoints.getBooks.matchFulfilled,
+      (state, { payload }) => {
+        state.books = payload.books;
+      }
+    );
   },
 });
 

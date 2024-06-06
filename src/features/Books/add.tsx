@@ -10,20 +10,20 @@ import {
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useQuery } from 'react-query';
+import { useSelector } from 'react-redux';
 import { Author, Book } from '../../interface';
 import ChallengeInput from '../../components/Form/Input';
-import { AppDispatch, RootState } from '../../app/store';
-import { addBook } from '../../services/books';
-import { fetchAuthors } from '../../services/authors';
-import { setAuthors } from '../Authors/authorSlice';
+import { RootState } from '../../app/store';
+import { useAddBookMutation } from '../api/booksApiSlice';
+import { useGetAuthorsQuery } from '../api/authorsApiSlice';
 
 const AddBook: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const [error, setError] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [fetchEnabled, setFetchEnabled] = useState(false);
+  const [addBook, { isError, isLoading }] = useAddBookMutation();
+  const {
+    error: authorError,
+    isError: isAuthorError,
+    isFetching,
+  } = useGetAuthorsQuery();
   const authors = useSelector((state: RootState) => state.authors.authors);
   const [authorList, setAuthorList] = useState<Author[]>([]);
   const defaultValues = {
@@ -39,33 +39,12 @@ const AddBook: React.FC = () => {
     setAuthorList(authors);
   }, [authors]);
 
-  useEffect(() => {
-    setFetchEnabled(true);
-  }, []);
-
-  const {
-    status: authorStatus,
-    error: authorError,
-    isError: isAuthorError,
-  } = useQuery('authors', fetchAuthors, {
-    enabled: fetchEnabled,
-    onSuccess: (data: { authors: Author[] }) => {
-      dispatch(setAuthors(data.authors));
-      setFetchEnabled(false);
-    },
-  });
-
   const onSubmit = async (data: Book) => {
     try {
-      setLoading(true);
-      await addBook(data);
+      await addBook(data).unwrap();
       reset(defaultValues);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.log('🚀 ~ onSubmit ~ err:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -73,9 +52,9 @@ const AddBook: React.FC = () => {
     <>
       <Grid item xs={12}>
         <Typography variant="h4">Add A Book</Typography>
-        {error && <Alert severity="error">{error}</Alert>}
-        {loading && <Alert severity="info">Adding...</Alert>}
-        {authorStatus === 'loading' && <div>Fetching Authors</div>}
+        {isError && <Alert severity="error">Failed to add book</Alert>}
+        {isLoading && <Alert severity="info">Adding...</Alert>}
+        {isFetching && <div>Fetching Authors</div>}
         {isAuthorError && (
           <Alert severity="error">
             Error: {JSON.stringify(authorError) || 'Something happened'}
@@ -125,7 +104,7 @@ const AddBook: React.FC = () => {
             />
           </div>
           <div>
-            <Button type="submit" disabled={loading} variant="outlined">
+            <Button type="submit" disabled={isLoading} variant="outlined">
               Add
             </Button>
           </div>

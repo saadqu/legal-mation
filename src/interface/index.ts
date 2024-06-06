@@ -1,6 +1,19 @@
 import Book from './book';
+import BookResponse from './bookResponse';
 import Author from './author';
 import AuthorPics from './authorPics';
 import AuthorResponse from './authorResponse';
 import UpdateAuthorRequest from './updateAuthorRequest';
-export type { Book, Author, AuthorPics, AuthorResponse, UpdateAuthorRequest };
+import UpdateBookRequest from './updateBookRequest';
+import SingleBook from './singleBook';
+
+export type {
+  Book,
+  BookResponse,
+  UpdateBookRequest,
+  Author,
+  AuthorPics,
+  AuthorResponse,
+  UpdateAuthorRequest,
+  SingleBook,
+};

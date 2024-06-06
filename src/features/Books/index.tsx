@@ -10,35 +10,25 @@ import {
   Typography,
 } from '@mui/material';
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
-import { AppDispatch, RootState } from '../../app/store';
-import { fetchBooks, removeBook } from '../../services/books';
-import { setBooks } from './bookSlice';
+import { RootState } from '../../app/store';
 import { Book } from '../../interface';
+import { useDeleteBookMutation, useGetBooksQuery } from '../api/booksApiSlice';
 
 const BooksComponent: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
+  const { error, isError, isFetching, refetch } = useGetBooksQuery();
+  const [deleteBook] = useDeleteBookMutation();
   const books = useSelector((state: RootState) => state.books.books);
-  const [fetchEnabled, setFetchEnabled] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedId, setSelectedId] = useState<string | number>(0);
 
   useEffect(() => {
-    setFetchEnabled(true);
-  }, []);
-
-  const { status, error, isError } = useQuery('books', fetchBooks, {
-    enabled: fetchEnabled,
-    onSuccess: (data: { books: Book[] }) => {
-      dispatch(setBooks(data.books));
-      setFetchEnabled(false);
-    },
-  });
+    refetch();
+  }, [refetch]);
 
   const editBook = (id: string | number) => {
     navigate(`/edit-book/${id}`);
@@ -51,12 +41,12 @@ const BooksComponent: React.FC = () => {
 
   const deleteBookFromDialog = async () => {
     try {
-      await removeBook(selectedId);
+      await deleteBook(selectedId).unwrap();
     } catch (error) {
       console.log('🚀 ~ deleteAuthorFromDialog ~ error:', error);
     } finally {
       setOpenDeleteDialog(false);
-      setFetchEnabled(true);
+      refetch();
     }
   };
 
@@ -101,31 +91,28 @@ const BooksComponent: React.FC = () => {
             Add
           </Button>
         </div>
-        {status === 'loading' && <div>Loading...</div>}
+        {isFetching && <div>Loading...</div>}
         {isError && (
           <div>Error: {JSON.stringify(error) || 'Something happened'}</div>
         )}
-        {status === 'success' && (
-          <Box width={700}>
-            <div style={{ height: 400, width: '100%' }}>
-              {/* <DataGrid {...gridData} slots={{ toolbar: GridToolbar }} /> */}
-              <DataGrid
-                rows={books}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
-                    },
+        <Box width={700}>
+          <div style={{ height: 400, width: '100%' }}>
+            <DataGrid
+              rows={books}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 5,
                   },
-                }}
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
-            </div>
-          </Box>
-        )}
+                },
+              }}
+              pageSizeOptions={[5]}
+              checkboxSelection
+              disableRowSelectionOnClick
+            />
+          </div>
+        </Box>
       </Grid>
       <Dialog
         open={openDeleteDialog}
