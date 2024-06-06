@@ -5,7 +5,7 @@ import { Author, AuthorResponse, UpdateAuthorRequest } from '../../interface';
 const URL_PATH = '/authors';
 
 export const authorsApiSlice = createApi({
-  reducerPath: 'api',
+  reducerPath: 'authorsApi',
   baseQuery: fetchBaseQuery({ baseUrl: `/${constants.NAMESPACE}` }),
   endpoints: (builder) => ({
     getAuthors: builder.query<AuthorResponse, void>({

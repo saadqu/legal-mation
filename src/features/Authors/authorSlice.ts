@@ -25,7 +25,6 @@ const authorSlice = createSlice({
     builder.addMatcher(
       authorsApiSlice.endpoints.getAuthors.matchFulfilled,
       (state, { payload }) => {
-        console.log("🚀 ~ payload:", payload)
         state.authors = payload.authors;
       }
     );
