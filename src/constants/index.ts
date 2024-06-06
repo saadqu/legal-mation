@@ -1,5 +1,5 @@
 const constants = {
-    NAMESPACE: 'challenge',
+    NAMESPACE: 'api',
     RANDOM_PICS: 'https://randomuser.me/api'
 };
 
