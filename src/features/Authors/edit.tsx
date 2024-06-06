@@ -11,7 +11,7 @@ import {
 
 const EditAuthor: React.FC = () => {
   const { id } = useParams();
-  const { data, isError, isFetching } = useGetAuthorQuery(id || 0);
+  const { data, isError, isFetching, refetch } = useGetAuthorQuery(id || 0);
   const [updateAuthor, { isError: isErrorUpdating, isLoading }] =
     useUpdateAuthorMutation();
 
@@ -26,12 +26,15 @@ const EditAuthor: React.FC = () => {
     setValue('name', data.authors.name);
   }, [data, setValue]);
 
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
   const onSubmit = async (author: Author) => {
     try {
       if (!id) throw new Error('id is not available');
       if (!data) throw new Error('Author values not found.');
       const authorPayload = { ...data.authors, name: author.name };
-      // data.authors.name = author.name;
       await updateAuthor({ author: authorPayload, id }).unwrap();
     } catch (err: unknown) {
       console.log('🚀 ~ onSubmit ~ err:', err);
@@ -54,23 +57,21 @@ const EditAuthor: React.FC = () => {
           <Alert severity="error">Error: Updating failed.</Alert>
         )}
 
-        {data && (
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <ChallengeInput<Author>
-              name="name"
-              control={control}
-              rules={{ required: true }}
-              style={{ marginTop: '2em' }}
-              label="Name"
-              error="Name is required"
-            />
-            <div>
-              <Button type="submit" disabled={isLoading} variant="outlined">
-                Update
-              </Button>
-            </div>
-          </form>
-        )}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <ChallengeInput<Author>
+            name="name"
+            control={control}
+            rules={{ required: true }}
+            style={{ marginTop: '2em' }}
+            label="Name"
+            error="Name is required"
+          />
+          <div>
+            <Button type="submit" disabled={isLoading} variant="outlined">
+              Update
+            </Button>
+          </div>
+        </form>
       </Grid>
     </>
   );

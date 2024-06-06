@@ -1,7 +1,11 @@
 {
   "name": "challenge",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "engines": {
+    "npm": "10.1.0",
+    "node": "20.7.0"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

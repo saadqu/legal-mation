@@ -11,19 +11,15 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { ErrorEvent } from './features/Error';
 import makeServer from './mirage/server';
-import { QueryClient, QueryClientProvider } from 'react-query';
 
 if (process.env.NODE_ENV === 'development') {
   makeServer({ environment: 'development' });
 }
 
-const queryClient = new QueryClient();
-
 const router = createBrowserRouter(routes);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
       <React.StrictMode>
         <ErrorBoundary fallback={<ErrorEvent />}>
           <Suspense fallback={<div>Loading....</div>}>
@@ -31,6 +27,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           </Suspense>
         </ErrorBoundary>
       </React.StrictMode>
-    </QueryClientProvider>
   </Provider>
 );
