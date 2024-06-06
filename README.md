@@ -43,3 +43,7 @@ There are validations added so all fields are required.
 ## Further Plan
 
 I am planning to add more tests and integrate `RTK Query` tests. Initially, I tested using the `React Query library`, and everything worked. However, after switching to `RTK Query`, some tests started failing. I will soon update the logic to fully utilize `RTK Query`, which is why some functions still rely on the `React Query library`.
+
+Initially, I implemented the tests utilizing React Query, and these tests were successfully integrated and are functioning correctly on the `features-react-query-mirage` branch.
+However, after evaluating our application requirements and performance considerations, I decided to migrate the app's functionality to use `RTK Query`. This transition promises more efficient data handling and better integration with `Redux`.
+To review the initial tests using `React Query`, you can switch to the `features-react-query-mirage` branch. The updated tests, now aligned with RTK Query, have been committed to the main branch.
